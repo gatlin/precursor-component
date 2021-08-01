@@ -16,7 +16,7 @@
     "format": "prettier --write \"{index.ts,src/**/*.ts}\"",
     "lint": "eslint \"{index.ts,src/**/*.ts}\" --fix",
     "prepublishOnly": "tsc",
-    "example": "tsc -p tsconfig.example.json && concurrently -k -r \"tsc -p tsconfig.example.json --watch --preserveWatchOutput\" \"wds --node-resolve --watch\""
+    "example": "tsc -p tsconfig.json && concurrently -k -r \"tsc -p tsconfig.json --watch --preserveWatchOutput\" \"wds --node-resolve --watch\""
   },
   "dependencies": {
     "lit": "^2.0.0-rc.2",
