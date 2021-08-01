@@ -39,17 +39,32 @@ class PrecursorComponent extends LitElement {
               </div>
             `
           )}
+          ${"HALT" === this.manager.current
+            ? html`
+                <div class="output-block">
+                  <pre><code>${JSON.stringify(
+                    this.manager.context,
+                    null,
+                    2
+                  )}</code>
+              </pre>
+                </div>
+              `
+            : null}
           ${"READLN" === this.manager.current
             ? html`
                 <span>
                   <label for="stdin-input">
                     <input
+                      autofocus
                       .value=${this.stdinBuffer}
                       @change=${this.updateStdinBuffer}
                       type="text"
                       id="stdin-input"
                     />
-                    <button type="button" @click=${this.replyStdin}>reply</button>
+                    <button type="button" @click=${this.replyStdin}>
+                      reply
+                    </button>
                   </label>
                 </span>
               `
@@ -174,6 +189,20 @@ class PrecursorComponent extends LitElement {
       /* color: #c5fffd; */
       border-radius: 4px;
       background-color: #dff8eb;
+    }
+
+    input[type="text"]#stdin-input {
+      border: 0;
+      outline: none;
+      background-color: inherit;
+      color: inherit;
+      line-height: 1.5rem;
+      border-bottom: 1px solid #d4e4bc;
+      font: inherit;
+      border-color: #ccc;
+      color: #edf7f6;
+      box-sizing: border-box;
+      margin-bottom: 1rem;
     }
 
     div#controls > button:hover {
