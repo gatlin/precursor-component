@@ -6,6 +6,8 @@ precursor-component
 This is an example embedding of my [Precursor][precursor] programming language
 in a webcomponent.
 
+[precursor]: https://github.com/gatlin/precursor-ts
+
 install
 ===
 
