@@ -113,7 +113,7 @@ class PrecursorComponent extends LitElement {
   }
 
   static styles = css`
-    @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
+    @import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
     :host {
       height: 100%;
       width: inherit;
