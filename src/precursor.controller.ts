@@ -32,6 +32,15 @@ class PrecursorController extends CESKM<Base> {
   public readonly actions: Action[keyof Action][] = [];
   public readonly stdout: Wire<string> = wire();
 
+  constructor(
+    cb: (w: { [key:string]: Wire<string> }) => void
+  ) {
+    super();
+    cb({
+      stdout: this.stdout
+    });
+  }
+
   protected defaultVMState(): VMState {
     return {
       done: true,

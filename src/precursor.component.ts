@@ -15,18 +15,16 @@ class PrecursorComponent extends LitElement {
   @state()
   stdoutBuffer: string[] = [];
 
-  private vm = new PrecursorController();
-
-  constructor() {
-    super();
-    this.vm.stdout.subscribe({
-      next: (message: string) => {
-        this.stdoutBuffer.push(message);
-      }
-    });
-  }
-
-  private manager = new Manager<VMState>(this, this.vm.machine);
+  private manager = new Manager<VMState>(
+    this,
+    new PrecursorController((wires) => {
+      wires.stdout.subscribe({
+        next: (message: string) => {
+          this.stdoutBuffer.push(message);
+        }
+      });
+    }).machine
+  );
 
   render(): TemplateResult {
     return html`
@@ -56,7 +54,7 @@ class PrecursorComponent extends LitElement {
                 <span>
                   <label for="stdin-input">
                     <input
-                      autofocus
+                      .autofocus
                       .value=${this.stdinBuffer}
                       @change=${this.updateStdinBuffer}
                       type="text"
@@ -115,6 +113,7 @@ class PrecursorComponent extends LitElement {
   }
 
   static styles = css`
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Code&display=swap');
     :host {
       height: 100%;
       width: inherit;
@@ -137,13 +136,13 @@ class PrecursorComponent extends LitElement {
       display: block;
       height: 100%;
       padding: 1rem;
-      border: 1px solid #2f4f4f;
       border-radius: 4px;
       flex: 2;
       width: 100%;
     }
 
     div#editor textarea {
+      margin: 0;
       background-color: inherit;
       height: 100%;
       font-family: "Fira Code", sans-serif;
@@ -154,19 +153,18 @@ class PrecursorComponent extends LitElement {
       line-height: 1.51rem;
       border-color: #ccc;
       color: #edf7f6;
-      box-sizing: border-box;
     }
 
     #output {
+      background-color: #11001c;
+      color: #d4e4bc;
       display: block;
       width: 100%;
-      flex: 1;
       height: 100%;
+      flex: 1;
       padding: 1rem;
       border: 1px solid #11OO1C;
       border-radius: 4px;
-      background-color: #11001c;
-      color: #d4e4bc;
       font-family: "Fira Code", "Fira Mono", monospace;
       font-weight: bold;
     }
@@ -174,7 +172,6 @@ class PrecursorComponent extends LitElement {
     div#controls {
       display: flex;
       flex-direction: column;
-      justify-content: stretch;
       flex: 1;
       padding: 1rem;
     }
