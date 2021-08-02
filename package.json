@@ -1,6 +1,6 @@
 {
   "name": "precursor-component",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "embedded precursor vm in a webcomponent",
   "author": "gatlin@niltag.net",
   "license": "AGPL-3.0",

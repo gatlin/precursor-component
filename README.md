@@ -18,4 +18,4 @@ npm i
 npm run example
 ```
 
-Then visit http://localhost:8000/demo to see it in action.
+Then visit http://localhost:8000/ to see it in action.
