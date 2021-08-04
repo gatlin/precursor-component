@@ -238,9 +238,9 @@ class PrecursorComponent extends LitElement {
       margin: 0;
       display: block;
       box-sizing: border-box;
-      border: 1px solid #912F40;
+      border: 1px solid #11001C;
       border-radius: 4px;
-      background-color: #912F40;
+      background-color: transparent;
       font-size: 20pt;
       color: #11001C;
     }
@@ -253,7 +253,6 @@ class PrecursorComponent extends LitElement {
       line-height: 1.5rem;
       border-bottom: 1px solid #d4e4bc;
       font: inherit;
-      border-color: #ccc;
       color: #edf7f6;
       box-sizing: border-box;
       margin-bottom: 1rem;
