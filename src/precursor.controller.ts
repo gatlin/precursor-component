@@ -28,15 +28,21 @@ type Cmd = {
   stdin: { data: string };
 };
 
+type IOWires = {
+  stdout: Wire<string>;
+};
+
 class PrecursorController extends CESKM<Base> {
-  public readonly actions: Action[keyof Action][] = [];
+  protected readonly actions: Action[keyof Action][] = [];
   protected stdout: Wire<string> = wire();
 
-  constructor(cb: (w: { [key: string]: Wire<string> }) => void) {
+  constructor(cb?: (wires: IOWires) => void) {
     super();
-    cb({
-      stdout: this.stdout
-    });
+    if (cb) {
+      cb({
+        stdout: this.stdout
+      });
+    }
   }
 
   protected defaultVMState(): VMState {
@@ -335,4 +341,4 @@ class PrecursorController extends CESKM<Base> {
 }
 
 export { PrecursorController };
-export type { Base, VMState, Cmd };
+export type { Base, VMState, Cmd, IOWires };

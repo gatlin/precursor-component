@@ -7,30 +7,30 @@ import type { VMState } from "./precursor.controller";
 @customElement("precursor-component")
 class PrecursorComponent extends LitElement {
   @state()
-  sourceCode = "";
+  protected sourceCode = "";
 
   @state()
-  stdinBuffer = "";
+  protected stdinBuffer = "";
 
   @state()
-  stdoutBuffer: string[] = [];
+  protected stdoutLog: string[] = [];
 
   private manager = new Manager<VMState>(
     this,
     new PrecursorController((wires) => {
       wires.stdout.subscribe({
         next: (message: string) => {
-          this.stdoutBuffer.push(message);
+          this.stdoutLog.push(message);
         }
       });
     }).machine
   );
 
-  render(): TemplateResult {
+  public render(): TemplateResult {
     return html`
       <div id="editor-panel">
         <div id="output">
-          ${this.stdoutBuffer.map(
+          ${this.stdoutLog.map(
             (message: string) => html`
               <div class="output-block">
                 <p>${message}</p>
@@ -41,7 +41,7 @@ class PrecursorComponent extends LitElement {
             ? html`
                 <div class="output-block">
                   <pre><code>${JSON.stringify(
-                    this.manager.context,
+                    this.manager.context.value,
                     null,
                     2
                   )}</code>
@@ -54,7 +54,6 @@ class PrecursorComponent extends LitElement {
                 <span>
                   <label for="stdin-input">
                     <input
-                      .autofocus
                       .value=${this.stdinBuffer}
                       @change=${this.updateStdinBuffer}
                       type="text"
@@ -70,9 +69,17 @@ class PrecursorComponent extends LitElement {
         </div>
         <div id="editor">
           <textarea
+            id="plain"
             spellcheck="false"
-            @change=${this.updateSourceCode}
+            @scroll=${this.syncScroll}
+            @input=${this.updateSourceCode}
           ></textarea>
+          <pre id="fancy" aria-hidden="true"><code id="fancy-content">${
+            this.sourceCode
+            .split("\n\n")
+            .map((p) => p.split("\n").map((line) => html`<span>${line}</span>`))
+            .map((p) => html`${p}<span>&nbsp;</span>`)
+          }</code></pre>
         </div>
       </div>
       <div id="controls">
@@ -85,25 +92,36 @@ class PrecursorComponent extends LitElement {
             )
           : this.controlButton("Reset", () => {
               this.manager.next("reset");
-              this.stdoutBuffer = [];
+              this.stdoutLog = [];
             })}
       </div>
     `;
   }
 
-  controlButton(label: string, action: () => void): TemplateResult {
-    return html` <button type="button" @click=${action}>${label}</button> `;
+  protected syncScroll(e: Event): void {
+    const textarea = e.target as HTMLElement;
+    const fancy = this.renderRoot.querySelector("#fancy");
+    if (null === fancy) {
+      return;
+    }
+    fancy.scrollTop = textarea.scrollTop;
+    fancy.scrollLeft = textarea.scrollLeft;
   }
 
-  updateSourceCode(e: Event) {
+  protected controlButton(label: string, action: () => void): TemplateResult {
+    return html`<button type="button" @click=${action}>${label}</button>`;
+  }
+
+  protected updateSourceCode(e: Event): void {
     this.sourceCode = (e.target as HTMLInputElement).value;
+    this.syncScroll(e);
   }
 
-  updateStdinBuffer(e: Event) {
+  protected updateStdinBuffer(e: Event): void {
     this.stdinBuffer = (e.target as HTMLInputElement).value;
   }
 
-  replyStdin() {
+  protected replyStdin(): void {
     const data = this.stdinBuffer;
     this.stdinBuffer = "";
     this.manager.next({
@@ -122,47 +140,83 @@ class PrecursorComponent extends LitElement {
     }
 
     div#editor-panel {
-      padding: 1rem;
       display: inline-flex;
       flex-direction: row;
-      justify-content: center;
       flex: 9;
-      margin-bottom: 1rem;
+      justify-content: center;
       gap: 1rem;
+      margin: 0;
+      padding: 1rem;
     }
 
     div#editor {
-      background-color: #2f4f4f;
       display: block;
-      height: 100%;
-      padding: 1rem;
-      border-radius: 4px;
-      flex: 2;
+      box-sizing: border-box;
+      flex: 3;
+      position: relative;
       width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0rem;
+      background-color: #2f4f4f;
+      border-radius: 4px;
     }
 
-    div#editor textarea {
-      margin: 0;
-      background-color: inherit;
+    #plain,
+    #fancy {
+      box-sizing: border-box;
+      margin: 0rem;
+      border: 1rem solid #2f4f4f;
+      border-radius: 4px;
+      padding: 0;
+      position: absolute;
+      top: 0rem;
+      left: 0rem;
       height: 100%;
-      font-family: "Fira Code", sans-serif;
-      font-size: 1rem;
       width: 100%;
-      border: 0;
+      overflow: auto;
+      white-space: pre-wrap;
+    }
+
+    #plain,
+    #fancy,
+    #fancy * {
+      font-size: 11pt;
+      font-family: "Fira Code", monospace;
+      line-height: 16pt;
+    }
+
+    textarea#plain {
+      z-index: 1;
+      background: transparent;
       outline: none;
-      line-height: 1.51rem;
-      border-color: #ccc;
+      color: transparent;
+      caret-color: white;
+      resize: none;
+      scrollbar-color: #edf7f6 transparent;
+      scrollbar-width: thin;
+    }
+
+    #fancy {
       color: #edf7f6;
+      z-index: 0;
+      scrollbar-width: none;
+    }
+
+    #fancy-content span {
+      display: block;
+      line-height: 16pt;
     }
 
     #output {
+      padding: 1rem;
+      box-sizing: border-box;
       background-color: #11001c;
       color: #d4e4bc;
       display: block;
       width: 100%;
       height: 100%;
       flex: 1;
-      padding: 1rem;
       border: 1px solid #11OO1C;
       border-radius: 4px;
       font-family: "Fira Code", "Fira Mono", monospace;
@@ -173,19 +227,19 @@ class PrecursorComponent extends LitElement {
       display: flex;
       flex-direction: column;
       flex: 1;
-      padding: 1rem;
+      padding: 0 1rem 1rem 1rem;
     }
 
     div#controls > button {
+      cursor: pointer;
       flex: 1;
       outline: none;
       margin: 0;
       display: block;
       box-sizing: border-box;
-      border: 1px solid #9db17c;
-      /* color: #c5fffd; */
+      border: 1px solid #11001c;
       border-radius: 4px;
-      background-color: #dff8eb;
+      background-color: #d4e4bc;
     }
 
     input[type="text"]#stdin-input {

@@ -1,6 +1,6 @@
 {
   "name": "precursor-component",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "embedded precursor vm in a webcomponent",
   "author": "gatlin@niltag.net",
   "license": "AGPL-3.0",
@@ -23,7 +23,7 @@
     "lit-robot-manager": "github:gatlin/manager",
     "precursor-ts": "github:gatlin/precursor-ts",
     "robot3": "^0.2.19",
-    "torc": "github:gatlin/torc#0918d6d2e",
+    "torc": "github:gatlin/torc#b3658ab99c73725ee783a2ebe190a0fa8f6851d5",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
