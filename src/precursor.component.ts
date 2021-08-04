@@ -133,6 +133,7 @@ class PrecursorComponent extends LitElement {
   static styles = css`
     @import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
     :host {
+      background-color: #edf7f6;
       height: 100%;
       width: inherit;
       display: flex;
@@ -237,9 +238,11 @@ class PrecursorComponent extends LitElement {
       margin: 0;
       display: block;
       box-sizing: border-box;
-      border: 1px solid #11001c;
+      border: 1px solid #912F40;
       border-radius: 4px;
-      background-color: #d4e4bc;
+      background-color: #912F40;
+      font-size: 20pt;
+      color: #11001C;
     }
 
     input[type="text"]#stdin-input {
