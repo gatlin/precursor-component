@@ -247,7 +247,6 @@ precursor.controller.d.ts
 precursor.controller.d.ts.map
 precursor.controller.js
 precursor.controller.js.map
-rollup.config.js
 texteditor.component.d.ts
 texteditor.component.d.ts.map
 texteditor.component.js
