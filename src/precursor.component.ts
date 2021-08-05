@@ -74,12 +74,13 @@ class PrecursorComponent extends LitElement {
             @scroll=${this.syncScroll}
             @input=${this.updateSourceCode}
           ></textarea>
-          <pre id="fancy" aria-hidden="true"><code id="fancy-content">${
-            this.sourceCode
+          <pre
+            id="fancy"
+            aria-hidden="true"
+          ><code id="fancy-content">${this.sourceCode
             .split("\n\n")
             .map((p) => p.split("\n").map((line) => html`<span>${line}</span>`))
-            .map((p) => html`${p}<span>&nbsp;</span>`)
-          }</code></pre>
+            .map((p) => html`${p}<span>&nbsp;</span>`)}</code></pre>
         </div>
       </div>
       <div id="controls">
@@ -90,10 +91,12 @@ class PrecursorComponent extends LitElement {
                 program: this.sourceCode
               })
             )
-          : this.controlButton("Reset", () => {
+          : "HALT" === this.manager.current
+          ? this.controlButton("Reset", () => {
               this.manager.next("reset");
               this.stdoutLog = [];
-            })}
+            })
+          : this.noopButton()}
       </div>
     `;
   }
@@ -110,6 +113,10 @@ class PrecursorComponent extends LitElement {
 
   protected controlButton(label: string, action: () => void): TemplateResult {
     return html`<button type="button" @click=${action}>${label}</button>`;
+  }
+
+  protected noopButton(): TemplateResult {
+    return html`<button type="button" disabled=${true}>Running ...</button>`;
   }
 
   protected updateSourceCode(e: Event): void {
@@ -132,17 +139,27 @@ class PrecursorComponent extends LitElement {
 
   static styles = css`
     @import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
+    @import url("https://rsms.me/inter/inter.css");
+    html {
+      font-family: "Inter", sans-serif;
+    }
+    @supports (font-variation-settings: normal) {
+      html {
+        font-family: "Inter var", sans-serif;
+      }
+    }
     :host {
       background-color: #edf7f6;
       height: 100%;
       width: inherit;
       display: flex;
       flex-direction: column;
+      font-family: "Inter var", "Inter", sans-serif;
     }
 
     div#editor-panel {
       display: inline-flex;
-      flex-direction: row;
+      flex-direction: column-reverse;
       flex: 9;
       justify-content: center;
       gap: 1rem;
@@ -153,7 +170,7 @@ class PrecursorComponent extends LitElement {
     div#editor {
       display: block;
       box-sizing: border-box;
-      flex: 3;
+      flex: 2;
       position: relative;
       width: 100%;
       height: 100%;
@@ -238,11 +255,11 @@ class PrecursorComponent extends LitElement {
       margin: 0;
       display: block;
       box-sizing: border-box;
-      border: 1px solid #11001C;
+      border: 1px solid #11001c;
       border-radius: 4px;
       background-color: transparent;
       font-size: 20pt;
-      color: #11001C;
+      color: #11001c;
     }
 
     input[type="text"]#stdin-input {
@@ -260,6 +277,20 @@ class PrecursorComponent extends LitElement {
 
     div#controls > button:hover {
       font-weight: bold;
+    }
+
+    div#controls > button:disabled {
+      color: #b9b9b9;
+    }
+
+    @media screen and (min-device-width: 800px) {
+      div#editor-panel {
+        flex-direction: row;
+      }
+
+      div#editor {
+        flex: 3;
+      }
     }
   `;
 }
