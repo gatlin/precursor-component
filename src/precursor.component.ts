@@ -3,11 +3,12 @@ import { customElement, state } from "lit/decorators.js";
 import { Manager } from "lit-robot-manager";
 import { PrecursorController } from "./precursor.controller.js";
 import type { VMState } from "./precursor.controller";
+import "./texteditor.component.js";
 
 @customElement("precursor-component")
 class PrecursorComponent extends LitElement {
   @state()
-  protected sourceCode = "";
+  protected source = "";
 
   @state()
   protected stdinBuffer = "";
@@ -25,6 +26,23 @@ class PrecursorComponent extends LitElement {
       });
     }).machine
   );
+
+  protected initFromSlotText() {
+    const slot = this.renderRoot.querySelector("slot");
+    if (null === slot) {
+      return slot;
+    }
+    const textContents = slot.assignedNodes({
+      flatten: true
+    });
+    if (null === textContents || 0 === textContents.length) {
+      return;
+    }
+    const text = textContents[0];
+    if ("string" === typeof text.textContent) {
+      this.source = text.textContent.trim();
+    }
+  }
 
   public render(): TemplateResult {
     return html`
@@ -55,7 +73,9 @@ class PrecursorComponent extends LitElement {
                   <label for="stdin-input">
                     <input
                       .value=${this.stdinBuffer}
-                      @change=${this.updateStdinBuffer}
+                      @change=${(e: Event): void => {
+                        this.stdinBuffer = (e.target as HTMLInputElement).value;
+                      }}
                       type="text"
                       id="stdin-input"
                     />
@@ -67,28 +87,22 @@ class PrecursorComponent extends LitElement {
               `
             : null}
         </div>
-        <div id="editor">
-          <textarea
-            id="plain"
-            spellcheck="false"
-            @scroll=${this.syncScroll}
-            @input=${this.updateSourceCode}
-          ></textarea>
-          <pre
-            id="fancy"
-            aria-hidden="true"
-          ><code id="fancy-content">${this.sourceCode
-            .split("\n\n")
-            .map((p) => p.split("\n").map((line) => html`<span>${line}</span>`))
-            .map((p) => html`${p}<span>&nbsp;</span>`)}</code></pre>
-        </div>
+        <text-editor
+          id="editor"
+          .value=${this.source}
+          @input=${(e: Event): void => {
+            this.source = (e.target as HTMLInputElement).value;
+          }}
+        >
+          <slot @slotchange=${this.initFromSlotText}></slot>
+        </text-editor>
       </div>
       <div id="controls">
         ${"INIT" === this.manager.current
           ? this.controlButton("Run", () =>
               this.manager.next({
                 type: "run",
-                program: this.sourceCode
+                program: this.source
               })
             )
           : "HALT" === this.manager.current
@@ -96,36 +110,20 @@ class PrecursorComponent extends LitElement {
               this.manager.next("reset");
               this.stdoutLog = [];
             })
-          : this.noopButton()}
+          : html`<button type="button" disabled=${true}>Running ...</button>`}
       </div>
     `;
   }
 
-  protected syncScroll(e: Event): void {
-    const textarea = e.target as HTMLElement;
-    const fancy = this.renderRoot.querySelector("#fancy");
-    if (null === fancy) {
-      return;
+  updated() {
+    const slot = this.renderRoot.querySelector("slot");
+    if (null !== slot) {
+      slot.textContent = this.source;
     }
-    fancy.scrollTop = textarea.scrollTop;
-    fancy.scrollLeft = textarea.scrollLeft;
   }
 
   protected controlButton(label: string, action: () => void): TemplateResult {
     return html`<button type="button" @click=${action}>${label}</button>`;
-  }
-
-  protected noopButton(): TemplateResult {
-    return html`<button type="button" disabled=${true}>Running ...</button>`;
-  }
-
-  protected updateSourceCode(e: Event): void {
-    this.sourceCode = (e.target as HTMLInputElement).value;
-    this.syncScroll(e);
-  }
-
-  protected updateStdinBuffer(e: Event): void {
-    this.stdinBuffer = (e.target as HTMLInputElement).value;
   }
 
   protected replyStdin(): void {
@@ -140,21 +138,20 @@ class PrecursorComponent extends LitElement {
   static styles = css`
     @import url("https://fonts.googleapis.com/css2?family=Fira+Code&display=swap");
     @import url("https://rsms.me/inter/inter.css");
-    html {
-      font-family: "Inter", sans-serif;
-    }
-    @supports (font-variation-settings: normal) {
-      html {
-        font-family: "Inter var", sans-serif;
-      }
-    }
+
     :host {
       background-color: #edf7f6;
       height: 100%;
       width: inherit;
       display: flex;
       flex-direction: column;
-      font-family: "Inter var", "Inter", sans-serif;
+      font-family: "Inter", sans-serif;
+    }
+
+    @supports (font-variation-settings: normal) {
+      :host {
+        font-family: "Inter var", sans-serif;
+      }
     }
 
     div#editor-panel {
@@ -165,65 +162,6 @@ class PrecursorComponent extends LitElement {
       gap: 1rem;
       margin: 0;
       padding: 1rem;
-    }
-
-    div#editor {
-      display: block;
-      box-sizing: border-box;
-      flex: 2;
-      position: relative;
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0rem;
-      background-color: #2f4f4f;
-      border-radius: 4px;
-    }
-
-    #plain,
-    #fancy {
-      box-sizing: border-box;
-      margin: 0rem;
-      border: 1rem solid #2f4f4f;
-      border-radius: 4px;
-      padding: 0;
-      position: absolute;
-      top: 0rem;
-      left: 0rem;
-      height: 100%;
-      width: 100%;
-      overflow: auto;
-      white-space: pre-wrap;
-    }
-
-    #plain,
-    #fancy,
-    #fancy * {
-      font-size: 11pt;
-      font-family: "Fira Code", monospace;
-      line-height: 16pt;
-    }
-
-    textarea#plain {
-      z-index: 1;
-      background: transparent;
-      outline: none;
-      color: transparent;
-      caret-color: white;
-      resize: none;
-      scrollbar-color: #edf7f6 transparent;
-      scrollbar-width: thin;
-    }
-
-    #fancy {
-      color: #edf7f6;
-      z-index: 0;
-      scrollbar-width: none;
-    }
-
-    #fancy-content span {
-      display: block;
-      line-height: 16pt;
     }
 
     #output {
@@ -283,13 +221,9 @@ class PrecursorComponent extends LitElement {
       color: #b9b9b9;
     }
 
-    @media screen and (min-device-width: 800px) {
+    @media screen and (min-width: 800px) {
       div#editor-panel {
         flex-direction: row;
-      }
-
-      div#editor {
-        flex: 3;
       }
     }
   `;

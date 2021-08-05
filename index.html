@@ -34,7 +34,72 @@ main {
   </head>
   <body>
     <main>
-      <precursor-component></precursor-component>
+      <precursor-component>
+(letrec (
+  ; Write a string to stdout and terminate with newline.
+  (writeln (λ (line) (shift k
+    (! (λ (f)
+      (let effect (! ((? f) "io:writeln" ))
+      ((? effect) line k)))))))
+
+  ; Read in a line from stdin as a string. BLOCKS.
+  (readln (λ () (shift k
+    (! (λ (f)
+      (let effect (! ((? f) "io:readln"))
+      ((? effect) k)))))))
+
+  ; Finish side-effecting code.
+  (finish (λ (value) (shift k
+    (! (λ (f)
+      (let effect (! ((? f) ""))
+      ((? effect) value)))))))
+
+  ; Implementation of side-effects.
+  (begin (λ (comp)
+    (let handle (reset (? comp))
+    ((? handle) (! (λ (effect-tag)
+      (if (op:eq "" effect-tag) (λ (value) value)
+      (if (op:eq "io:writeln" effect-tag) (λ (output continue)
+        (let output (? output)
+        (let _ (op:writeln output)
+        (let res (! (continue _))
+        ((? begin) res)))))
+      (if (op:eq "io:readln" effect-tag) (λ (continue)
+        (let input (op:readln)
+        (let res (! (continue input))
+        ((? begin) res))))
+      _ ; undefined behavior
+  )))))))))
+
+  ; Composes writeln and readln.
+  (prompt (λ (message)
+    (let _ ((? writeln) message)
+    ((? readln)))))
+
+  ; Helper: constructs a friendly salutation for a given name.
+  (welcome (λ (name)
+    (let name (? name)
+    (op:concat "Welcome, "
+    (op:concat name "!")))))
+
+  ; Helper: computes an Interesting Fact™ about a given human age.
+  (dog-years (λ (age)
+    (let age (? age)
+    (let age-times-7 (op:num-&gt;str (op:mul (op:str-&gt;num age) 7))
+    (op:concat "Whoa! That is "
+    (op:concat age-times-7 " in dog years!"))))))
+
+  (pair (λ (a b) (reset ((shift k k) a b))))
+)
+((? begin) (!
+  (let name ((? prompt) "What is your name?")
+  (let _ ((? writeln) (! ((? welcome) name)))
+  (let age ((? prompt) "How old are you?")
+  (let _ ((? writeln) (! ((? dog-years) age)))
+  (let p ((? pair) name (op:str-&gt;num age))
+  ((? finish) p))))))))
+)
+      </precursor-component>
     </main>
   </body>
 </html>
