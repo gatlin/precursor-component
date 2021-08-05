@@ -1,26 +1,34 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "module": "esnext",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "lib": ["es2017", "dom"],
-    "strict": true,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "outDir": "./dist",
+    "target": "es2019",
+    "module": "es2020",
+    "lib": ["es2020","DOM","DOM.Iterable"],
+    "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "inlineSources": true,
-    "rootDir": "./",
-    "declaration": true,
-    "incremental": true,
-    "baseUrl": "."
+    "outDir": "./",
+    "rootDir": "./src",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "strict": true
+      }
+    ]
   },
-  "include": [ "index.ts" ],
-  "exclude": [
-    "node_modules",
-    "./dist/**/*"
-  ]
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": []
 }

@@ -237,3 +237,18 @@ tags
 [._]*.un~
 
 # End of https://www.toptal.com/developers/gitignore/api/vim,emacs,macos,git,node
+
+precursor.component.bundled.js
+precursor.component.d.ts
+precursor.component.d.ts.map
+precursor.component.js
+precursor.component.js.map
+precursor.controller.d.ts
+precursor.controller.d.ts.map
+precursor.controller.js
+precursor.controller.js.map
+rollup.config.js
+texteditor.component.d.ts
+texteditor.component.d.ts.map
+texteditor.component.js
+texteditor.component.js.map

@@ -59,8 +59,10 @@ class PrecursorController extends CESKM<Base> {
           "run",
           "STEP",
           reduce(
-            (vms: VMState, cmd: Cmd["run"]): VMState =>
-              this.step(this.make_initial_state(parse_cbpv(cmd.program)))
+            (vms: VMState, cmd: Cmd["run"]): VMState => {
+              vms = this.step(this.make_initial_state(parse_cbpv(cmd.program)));
+              return vms;
+            }
           )
         )
       ),
