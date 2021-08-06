@@ -8,16 +8,13 @@
   "module": "precursor.component.js",
   "types": "index.d.ts",
   "type": "module",
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsc",
     "bundle": "tsc && rollup -c",
     "clean": "rimraf \"{*.d.ts,*.map,*.js.map,*.component.js,*.controller.js}\"",
     "format": "prettier --write \"{src/**/*.ts}\"",
     "lint": "eslint \"{src/**/*.ts}\" --fix",
-    "prepublishOnly": "tsc",
+    "prepublishOnly": "npm run build",
     "example": "tsc -p tsconfig.json && concurrently -k -r \"tsc -p tsconfig.json --watch --preserveWatchOutput\" \"wds --node-resolve --watch\""
   },
   "dependencies": {
