@@ -22,7 +22,7 @@
     "lit-robot-manager": "github:gatlin/manager",
     "precursor-ts": "github:gatlin/precursor-ts",
     "robot3": "^0.2.19",
-    "torc": "github:gatlin/torc#b3658ab99c73725ee783a2ebe190a0fa8f6851d5",
+    "torc": "github:gatlin/torc#5c38047917c70cf57382fbab159813ab016f8c51",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
