@@ -19,6 +19,7 @@ html, body {
 
 body {
   min-height: 100%;
+  background-color: #edf7f6;
 }
 
 main {
@@ -29,77 +30,268 @@ main {
   width: 100%;
   margin: 0;
 }
+
+p {
+  font-family: "Inter", sans-serif;
+}
+
+a {
+  color: rgb(0,100,200);
+}
+
+a:visited {
+  color: rgb(0,80,160);
+}
+
+main > div {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+label {
+  padding: 0 1rem;
+}
+
+span.heading {
+  padding: 1rem;
+  margin: 0;
+}
+select {
+  margin: 0;
+  padding: 0.4rem;
+  box-sizing: border-box;
+  border-radius: 4px;
+  border: 1px solid #b9b9b9;
+  width: 100%;
+  text-align: center;
+}
+
+@media screen and (min-width: 768px and max-width 1024px) {
+  main > div {
+    padding: 1rem;
+  }
+  select {
+    margin: 0 0 0.5rem 0;
+  }
+}
+
 </style>
     <script src="./precursor.component.js" type="module"></script>
   </head>
   <body>
     <main>
-      <precursor-component>
-(letrec (
-  ; Write a string to stdout and terminate with newline.
-  (writeln (λ (line) (shift k
-    (! (λ (f)
-      (let effect (! ((? f) "io:writeln" ))
-      ((? effect) line k)))))))
-
-  ; Read in a line from stdin as a string. BLOCKS.
-  (readln (λ () (shift k
-    (! (λ (f)
-      (let effect (! ((? f) "io:readln"))
-      ((? effect) k)))))))
-
-  ; Finish side-effecting code.
-  (finish (λ (value) (shift k
-    (! (λ (f)
-      (let effect (! ((? f) ""))
-      ((? effect) value)))))))
-
-  ; Implementation of side-effects.
-  (begin (λ (comp)
-    (let handle (reset (? comp))
-    ((? handle) (! (λ (effect-tag)
-      (if (op:eq "" effect-tag) (λ (value) value)
-      (if (op:eq "io:writeln" effect-tag) (λ (output continue)
-        (let output (? output)
-        (let _ (op:writeln output)
-        (let res (! (continue _))
-        ((? begin) res)))))
-      (if (op:eq "io:readln" effect-tag) (λ (continue)
-        (let input (op:readln)
-        (let res (! (continue input))
-        ((? begin) res))))
-      _ ; undefined behavior
-  )))))))))
-
-  ; Composes writeln and readln.
-  (prompt (λ (message)
-    (let _ ((? writeln) message)
-    ((? readln)))))
-
-  ; Helper: constructs a friendly salutation for a given name.
-  (welcome (λ (name)
-    (let name (? name)
-    (op:concat "Welcome, "
-    (op:concat name "!")))))
-
-  ; Helper: computes an Interesting Fact™ about a given human age.
-  (dog-years (λ (age)
-    (let age (? age)
-    (let age-times-7 (op:num-&gt;str (op:mul (op:str-&gt;num age) 7))
-    (op:concat "Whoa! That is "
-    (op:concat age-times-7 " in dog years!"))))))
-
-  (pair (λ (a b) (reset ((shift k k) a b))))
-)
-((? begin) (!
-  (let name ((? prompt) "What is your name?")
-  (let _ ((? writeln) (! ((? welcome) name)))
-  (let age ((? prompt) "How old are you?")
-  (let _ ((? writeln) (! ((? dog-years) age)))
-  (let p ((? pair) name (op:str-&gt;num age))
-  ((? finish) p))))))))
-)
-      </precursor-component>
+      <div>
+        <span class="heading">
+          <p>
+            <a
+              target="_blank"
+              href="//github.com/gatlin/precursor-ts">
+              more info about this language.
+            </a>
+            <a
+              target="_blank"
+              href="//github.com/gatlin/precursor-component">
+              source code for this site.
+            </a>
+          </p>
+        </span>
+        <label for="example-select">
+          <select id="example-select" name="example-select">
+            <option value="" selected>pick an example or write your own code</option>
+            <option value="0">sample 1 - generators</option>
+            <option value="1">sample 2 - continuations</option>
+            <option value="2">sample 3 - reducers &amp; closures</option>
+            <option value="3">sample 4 - data structures</option>
+            <option value="4">sample 5 - effect handlers!</option>
+          </select>
+        </label>
+        <precursor-component id="vm">
+        </precursor-component>
+      </div>
     </main>
+    <script type="text/javascript">
+const samples = [
+[
+  "(letrec (",
+  "  (yield (\\ (value) (shift k",
+  "    (! (\\ (p)",
+  "      ((? p) value k))))))",
+  "",
+  "  (next (\\ (gen)",
+  "    (let k ( (? gen) (! (\\ (a b) b)))",
+  "    (k _))))",
+  "",
+  "  (peek (\\ (gen)",
+  "    ( (? gen) (! (\\ (a b) a)))))",
+  "  )",
+  "(let gen (reset",
+  "  (let _ ((? yield) 1)",
+  "  (let _ ((? yield) 2)",
+  "         ((? yield) 3))))",
+  "",
+  "(let n1 ((? peek) gen)",
+  "(let gen ((? next) gen)",
+  "",
+  "(let n2 ((? peek) gen)",
+  "(let gen ((? next) gen)",
+  "",
+  "(let n3 ((? peek) gen)",
+  "(op:add (op:add n1 n2) n3)))))))",
+  ")"
+],
+[
+  "(letrec (",
+  "  (thirteen (\\ ()",
+  "    (let twelve (reset",
+  "    (let three-then-six (shift times-2",
+  "      (let six (times-2 3)",
+  "      (times-2 six)))",
+  "      (op:mul 2 three-then-six)))",
+  "    (op:add twelve 1))))",
+  ")",
+  "(let n ((? thirteen))",
+  "(op:concat \"Result: \" (! (op:num->str n))))",
+  ")"
+],
+[
+  "(letrec (",
+  "  ; \"Objects are a poor man's closures;",
+  "  ; closures are a poor man's objects.\"",
+  "  ; - Anton van Straaten, paraphrased",
+  "  (make-reducer (\\ (initial-value) (letrec (",
+  "    (loop (\\ (acc first-run) (reset",
+  "      (let str (shift k k)",
+  "      (if (op:and",
+  "            (op:eq str \"\")",
+  "            (op:not first-run))",
+  "        acc",
+  "        ((? loop) (op:concat acc str) #f  ))))))",
+  "    )",
+  "    ((? loop) initial-value #t)",
+  "  )))",
+  ")",
+  "(let the-reducer ((? make-reducer) \"\")",
+  "(let the-reducer (the-reducer \"hello\")",
+  "(let the-reducer (the-reducer \", world\")",
+  "(the-reducer \"\"))))",
+  ")"
+],
+[
+  "(letrec (",
+  "  ; a list is defined in terms of its so-called \"right fold\" ",
+  "  (foldr (\\ (fn init-value the-list)",
+  "    (let the-list (? the-list)",
+  "    ( (? the-list) fn init-value ) )))",
+  "",
+  "  ; two constructors: empty list ...",
+  "  (nil (\\ () (! (\\ (c e) e))))",
+  "",
+  "  ; ... and prepending an item to an existing list",
+  "  (cons (\\ (x xs) (! (\\ (c e)",
+  "    ( (? c)",
+  "      x",
+  "      (! ( (? foldr)",
+  "        c",
+  "        e",
+  "        xs )))))))",
+  ")",
+  "(let list-1",
+  "  (! ((? cons) 17",
+  "  (! ((? cons) 20",
+  "  (! ((? cons) 86",
+  "  (! ((? nil)))))))))",
+  "( (? foldr)",
+  "    (! (\\ (a b)",
+  "      (let a (? a)",
+  "      (let b (? b)",
+  "      (op:add a b)))))",
+  "    0",
+  "    list-1 ))",
+  ")"
+],
+[
+"(letrec (",
+"  ; Write a string to stdout and terminate with newline.",
+"  (writeln (λ (line) (shift k",
+"    (! (λ (f)",
+"      (let effect (! ((? f) \"io:writeln\" ))",
+"      ((? effect) line k)))))))",
+"",
+"  ; Read in a line from stdin as a string. BLOCKS.",
+"  (readln (λ () (shift k",
+"    (! (λ (f)",
+"      (let effect (! ((? f) \"io:readln\"))",
+"      ((? effect) k)))))))",
+"",
+"  ; Finish side-effecting code.",
+"  (finish (λ (value) (shift k",
+"    (! (λ (f)",
+"      (let effect (! ((? f) \"\"))",
+"      ((? effect) value)))))))",
+"",
+"  ; Implementation of side-effects.",
+"  (begin (λ (comp)",
+"    (let handle (reset (? comp))",
+"    ((? handle) (! (λ (effect-tag)",
+"      (if (op:eq \"\" effect-tag) (λ (value) value)",
+"      (if (op:eq \"io:writeln\" effect-tag) (λ (output continue)",
+"        (let output (? output)",
+"        (let _ (op:writeln output)",
+"        (let res (! (continue _))",
+"        ((? begin) res)))))",
+"      (if (op:eq \"io:readln\" effect-tag) (λ (continue)",
+"        (let input (op:readln)",
+"        (let res (! (continue input))",
+"        ((? begin) res))))",
+"      _ ; undefined behavior",
+"  )))))))))",
+"",
+"  ; Composes writeln and readln.",
+"  (prompt (λ (message)",
+"    (let _ ((? writeln) message)",
+"    ((? readln)))))",
+"",
+"  ; Helper: constructs a friendly salutation for a given name.",
+"  (welcome (λ (name)",
+"    (let name (? name)",
+"    (op:concat \"Welcome, \"",
+"    (op:concat name \"!\")))))",
+"",
+"  ; Helper: computes an Interesting Fact™ about a given human age.",
+"  (dog-years (λ (age)",
+"    (let age (? age)",
+"    (let age-times-7 (op:num->str (op:mul (op:str->num age) 7))",
+"    (op:concat \"Whoa! That is \"",
+"    (op:concat age-times-7 \" in dog years!\"))))))",
+"",
+"  (pair (λ (a b) (reset ((shift k k) a b))))",
+")",
+"((? begin) (!",
+"  (let name ((? prompt) \"What is your name?\")",
+"  (let _ ((? writeln) (! ((? welcome) name)))",
+"  (let age ((? prompt) \"How old are you?\")",
+"  (let _ ((? writeln) (! ((? dog-years) age)))",
+"  (let p ((? pair) name (op:str->num age))",
+"  ((? finish) p))))))))",
+")",
+]
+];
+      (function main() {
+        const selector = document.querySelector("#example-select");
+        selector.addEventListener("change", (e) => {
+          const val = e.target.value;
+          if ("" === val) {
+            document.querySelector("#vm").textContent = " ";
+          }
+          else {
+            const idx = parseInt(val, 10);
+            document.querySelector("#vm").textContent = samples[idx].
+                    join("\n");
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
