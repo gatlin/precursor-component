@@ -17,7 +17,7 @@ type VMState = IteratorResult<State<Base>, Value<Base>>;
 type Virtual<S = Record<string, unknown>, K = string> = Machine<S, VMState, K>;
 type Action = {
   readln: {
-    continue: Signal<Value<Base>>;
+    input: Signal<Value<Base>>;
   };
   writeln: {
     message: string;
@@ -58,12 +58,10 @@ class PrecursorController extends CESKM<Base> {
         transition(
           "run",
           "STEP",
-          reduce(
-            (vms: VMState, cmd: Cmd["run"]): VMState => {
-              vms = this.step(this.make_initial_state(parse_cbpv(cmd.program)));
-              return vms;
-            }
-          )
+          reduce((vms: VMState, cmd: Cmd["run"]): VMState => {
+            vms = this.step(this.make_initial_state(parse_cbpv(cmd.program)));
+            return vms;
+          })
         )
       ),
       STEP: state(
@@ -95,8 +93,7 @@ class PrecursorController extends CESKM<Base> {
         immediate(
           "READLN",
           guard(
-            (): boolean =>
-              this.actions.length > 0 && "continue" in this.actions[0]
+            (): boolean => this.actions.length > 0 && "input" in this.actions[0]
           )
         ),
         immediate("HALT")
@@ -108,12 +105,12 @@ class PrecursorController extends CESKM<Base> {
           reduce((vms: VMState, cmd: Cmd["stdin"]): VMState => {
             const action: Record<string, unknown> | undefined =
               this.actions.shift();
-            if ("undefined" === typeof action || !("continue" in action)) {
+            if ("undefined" === typeof action || !("input" in action)) {
               throw new Error("invalid continuation awaiting readln");
             }
-            const cont: Signal<Value<Base>> = (action as Action["readln"])
-              .continue;
-            cont.next(scalar(cmd.data));
+            const input: Signal<Value<Base>> = (action as Action["readln"])
+              .input;
+            input.next(scalar(cmd.data));
             return vms;
           })
         )
@@ -161,7 +158,7 @@ class PrecursorController extends CESKM<Base> {
     switch (op_sym) {
       case "op:readln": {
         const input = signal<Value<Base>>(continuation(topk()));
-        this.actions.push({ continue: input });
+        this.actions.push({ input });
         return scalar(input);
       }
       case "op:writeln": {
@@ -180,135 +177,135 @@ class PrecursorController extends CESKM<Base> {
       }
       case "op:mul": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
-          throw new Error(`arguments must be numbers`);
+          throw new Error("arguments must be numbers");
         }
         const result: unknown = args[0].v * args[1].v;
         return scalar(result as Base);
       }
       case "op:add": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
-          throw new Error(`arguments must be numbers`);
+          throw new Error("arguments must be numbers");
         }
         const result: unknown = args[0].v + args[1].v;
         return scalar(result as Base);
       }
       case "op:sub": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
-          throw new Error(`arguments must be numbers`);
+          throw new Error("arguments must be numbers");
         }
         const result: unknown = args[0].v - args[1].v;
         return scalar(result as Base);
       }
       case "op:eq": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if (
           ("number" !== typeof args[0].v || "number" !== typeof args[1].v) &&
           ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v) &&
           ("string" !== typeof args[0].v || "string" !== typeof args[1].v)
         ) {
-          throw new Error(`arguments must be numbers or booleans or strings`);
+          throw new Error("arguments must be numbers or booleans or strings");
         }
         const result: unknown = args[0].v === args[1].v;
         return scalar(result as Base);
       }
       case "op:lt": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
-          throw new Error(`arguments must be numbers`);
+          throw new Error("arguments must be numbers");
         }
         const result: unknown = args[0].v < args[1].v;
         return scalar(result as Base);
       }
       case "op:lte": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
-          throw new Error(`arguments must be numbers`);
+          throw new Error("arguments must be numbers");
         }
         const result: unknown = args[0].v <= args[1].v;
         return scalar(result as Base);
       }
       case "op:not": {
         if (!("v" in args[0])) {
-          throw new Error(`argument must be a value`);
+          throw new Error("argument must be a value");
         }
         if ("boolean" !== typeof args[0].v) {
-          throw new Error(`argument must be a boolean`);
+          throw new Error("argument must be a boolean");
         }
         const result = !args[0].v;
         return scalar(result);
       }
       case "op:and": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v) {
-          throw new Error(`arguments must be booleans`);
+          throw new Error("arguments must be booleans");
         }
         const result = args[0].v && args[1].v;
         return scalar(result);
       }
       case "op:or": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("boolean" !== typeof args[0].v || "boolean" !== typeof args[1].v) {
-          throw new Error(`arguments must be booleans`);
+          throw new Error("arguments must be booleans");
         }
         const result = args[0].v || args[1].v;
         return scalar(result);
       }
       case "op:concat": {
         if (!("v" in args[0]) || !("v" in args[1])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if ("string" !== typeof args[0].v || "string" !== typeof args[1].v) {
-          throw new Error(`arguments must be strings`);
+          throw new Error("arguments must be strings");
         }
         const result: unknown = args[0].v.concat(args[1].v);
         return scalar(result as Base);
       }
       case "op:strlen": {
         if (!("v" in args[0])) {
-          throw new Error(`argument must be a value`);
+          throw new Error("argument must be a value");
         }
         if ("string" !== typeof args[0].v) {
-          throw new Error(`argument must be a string`);
+          throw new Error("argument must be a string");
         }
         const result: unknown = args[0].v.length;
         return scalar(result as Base);
       }
       case "op:substr": {
         if (!("v" in args[0]) || !("v" in args[1]) || !("v" in args[2])) {
-          throw new Error(`arguments must be values`);
+          throw new Error("arguments must be values");
         }
         if (
           "string" !== typeof args[0].v ||
           "number" !== typeof args[1].v ||
           "number" !== typeof args[2].v
         ) {
-          throw new Error(`arguments must be strings`);
+          throw new Error("arguments must be strings");
         }
         const result: unknown = args[0].v.slice(args[1].v, args[2].v);
         return scalar(result as Base);
       }
       case "op:str->num": {
         if (!("v" in args[0])) {
-          throw new Error(`argument must be a value`);
+          throw new Error("argument must be a value");
         }
         if ("string" !== typeof args[0].v) {
           throw new Error(`argument must be a string: ${args[0].v}`);
@@ -317,7 +314,7 @@ class PrecursorController extends CESKM<Base> {
       }
       case "op:num->str": {
         if (!("v" in args[0])) {
-          throw new Error(`argument must be a value`);
+          throw new Error("argument must be a value");
         }
         if ("number" !== typeof args[0].v) {
           throw new Error(`argument must be a number: ${args[0].v}`);
