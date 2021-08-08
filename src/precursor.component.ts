@@ -49,33 +49,33 @@ class PrecursorComponent extends LitElement {
       <div id="editor-panel">
         <div id="output">
           ${this.stdoutLog.map(
-            (message: string) => html`
+    (message: string) => html`
               <div class="output-block">
                 <p>${message}</p>
               </div>
             `
-          )}
+  )}
           ${"HALT" === this.manager.current
-            ? html`
+    ? html`
                 <div class="output-block">
                   <pre><code>${JSON.stringify(
-                    this.manager.context.value,
-                    null,
-                    2
-                  )}</code>
+    this.manager.context.value,
+    null,
+    2
+  )}</code>
               </pre>
                 </div>
               `
-            : null}
+    : null}
           ${"READLN" === this.manager.current
-            ? html`
+    ? html`
                 <span>
                   <label for="stdin-input">
                     <input
                       .value=${this.stdinBuffer}
                       @change=${(e: Event): void => {
-                        this.stdinBuffer = (e.target as HTMLInputElement).value;
-                      }}
+    this.stdinBuffer = (e.target as HTMLInputElement).value;
+  }}
                       type="text"
                       id="stdin-input"
                     />
@@ -85,32 +85,32 @@ class PrecursorComponent extends LitElement {
                   </label>
                 </span>
               `
-            : null}
+    : null}
         </div>
         <text-editor
           id="editor"
           .value=${this.source}
           @input=${(e: Event): void => {
-            this.source = (e.target as HTMLInputElement).value;
-          }}
+    this.source = (e.target as HTMLInputElement).value;
+  }}
         >
           <slot @slotchange=${this.initFromSlotText}></slot>
         </text-editor>
       </div>
       <div id="controls">
         ${"INIT" === this.manager.current
-          ? this.controlButton("Run", () =>
-              this.manager.next({
-                type: "run",
-                program: this.source
-              })
-            )
-          : "HALT" === this.manager.current
-          ? this.controlButton("Reset", () => {
-              this.manager.next("reset");
-              this.stdoutLog = [];
-            })
-          : html`<button type="button" disabled=${true}>Running ...</button>`}
+    ? this.controlButton("Run", () =>
+      this.manager.next({
+        type: "run",
+        program: this.source
+      })
+    )
+    : "HALT" === this.manager.current
+      ? this.controlButton("Reset", () => {
+        this.manager.next("reset");
+        this.stdoutLog = [];
+      })
+      : html`<button type="button" disabled=${true}>Running ...</button>`}
       </div>
     `;
   }

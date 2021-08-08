@@ -12,8 +12,8 @@
     "build": "tsc",
     "bundle": "tsc && rollup -c",
     "clean": "rimraf \"{*.d.ts,*.map,*.js.map,*.component.js,*.controller.js,*.bundled.js}\"",
-    "format": "prettier --write \"{src/**/*.ts}\"",
-    "lint": "eslint \"{src/**/*.ts}\" --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" --fix",
     "prepublishOnly": "npm run build",
     "example": "tsc -p tsconfig.json && concurrently -k -r \"tsc -p tsconfig.json --watch --preserveWatchOutput\" \"wds --node-resolve --watch\""
   },

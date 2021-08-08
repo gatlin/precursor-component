@@ -21,13 +21,13 @@ class TextEditor extends LitElement {
           @input=${this.updateValue}
         ></textarea>
         <pre id="fancy" aria-hidden="true"><code id="fancy-content">${lines
-          .map((p) => p.split("\n").map((line) => html`<span>${line}</span>`))
-          .map(
-            (p, i) =>
-              html`${p}${i < lines.length - 1
-                ? html`<span>&nbsp;</span>`
-                : null}`
-          )}</code></pre>
+    .map((p) => p.split("\n").map((line) => html`<span>${line}</span>`))
+    .map(
+      (p, i) =>
+        html`${p}${i < lines.length - 1
+          ? html`<span>&nbsp;</span>`
+          : null}`
+    )}</code></pre>
       </div>
     `;
   }
