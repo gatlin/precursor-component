@@ -17,7 +17,7 @@ type VMState = IteratorResult<State<Base>, Value<Base>>;
 type Virtual<S = Record<string, unknown>, K = string> = Machine<S, VMState, K>;
 type Action = {
   readln: {
-    continue: Signal<Value<Base>>;
+    input: Signal<Value<Base>>;
   };
   writeln: {
     message: string;
@@ -96,7 +96,7 @@ class PrecursorController extends CESKM<Base> {
           "READLN",
           guard(
             (): boolean =>
-              this.actions.length > 0 && "continue" in this.actions[0]
+              this.actions.length > 0 && "input" in this.actions[0]
           )
         ),
         immediate("HALT")
@@ -108,12 +108,11 @@ class PrecursorController extends CESKM<Base> {
           reduce((vms: VMState, cmd: Cmd["stdin"]): VMState => {
             const action: Record<string, unknown> | undefined =
               this.actions.shift();
-            if ("undefined" === typeof action || !("continue" in action)) {
+            if ("undefined" === typeof action || !("input" in action)) {
               throw new Error("invalid continuation awaiting readln");
             }
-            const cont: Signal<Value<Base>> = (action as Action["readln"])
-              .continue;
-            cont.next(scalar(cmd.data));
+            const input: Signal<Value<Base>> = (action as Action["readln"]).input;
+            input.next(scalar(cmd.data));
             return vms;
           })
         )
@@ -161,7 +160,7 @@ class PrecursorController extends CESKM<Base> {
     switch (op_sym) {
       case "op:readln": {
         const input = signal<Value<Base>>(continuation(topk()));
-        this.actions.push({ continue: input });
+        this.actions.push({ input });
         return scalar(input);
       }
       case "op:writeln": {
