@@ -175,6 +175,16 @@ class PrecursorController extends CESKM<Base> {
         const timestamp = Date.now() as number;
         return scalar(timestamp);
       }
+      case "op:div": {
+        if (!("v" in args[0]) || !("v" in args[1])) {
+          throw new Error("arguments must be values");
+        }
+        if ("number" !== typeof args[0].v || "number" !== typeof args[1].v) {
+          throw new Error("arguments must be numbers");
+        }
+        const result: unknown = args[0].v / args[1].v;
+        return scalar(result as Base);
+      }
       case "op:mul": {
         if (!("v" in args[0]) || !("v" in args[1])) {
           throw new Error("arguments must be values");
