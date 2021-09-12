@@ -7,8 +7,8 @@ import {
   immediate
 } from "robot3";
 import type { Machine } from "robot3";
-import { CESKM, scalar, parse_cbpv, continuation, topk } from "precursor-ts";
-import type { State, Value, Store } from "precursor-ts";
+import { CESKM, Store, scalar, parse_cbpv, continuation, topk } from "precursor-ts";
+import type { State, Value } from "precursor-ts";
 import { signal, wire } from "torc";
 import type { Signal, Wire } from "torc";
 
@@ -31,6 +31,22 @@ type Cmd = {
 type IOWires = {
   stdout: Wire<string>;
 };
+
+class Memory extends Store<Base> {
+  public lookup(addr: string): Value<Base> {
+    let val = super.lookup(addr);
+    if (
+      "v" in val &&
+      null !== val.v &&
+      "object" === typeof val.v &&
+      "value" in val.v
+    ) {
+      val = val.v.value;
+      delete this.store[addr];
+    }
+    return val;
+  }
+}
 
 class PrecursorController extends CESKM<Base> {
   protected readonly actions: Action[keyof Action][] = [];
@@ -59,7 +75,7 @@ class PrecursorController extends CESKM<Base> {
           "run",
           "STEP",
           reduce((vms: VMState, cmd: Cmd["run"]): VMState => {
-            vms = this.step(this.make_initial_state(parse_cbpv(cmd.program)));
+            vms = this.step(this.inject(parse_cbpv(cmd.program)));
             return vms;
           })
         )
@@ -140,18 +156,8 @@ class PrecursorController extends CESKM<Base> {
     () => this.defaultVMState()
   );
 
-  protected store_lookup(sto: Store<Base>, addr: string): Value<Base> {
-    let val: Value<Base> = super.store_lookup(sto, addr);
-    if (
-      "v" in val &&
-      null !== val.v &&
-      "object" === typeof val.v &&
-      "value" in val.v
-    ) {
-      val = val.v.value; // dynamically evaluate signal
-      delete sto[addr];
-    }
-    return val;
+  protected empty_store() {
+    return new Memory();
   }
 
   protected op(op_sym: string, args: Value<Base>[]): Value<Base> {
