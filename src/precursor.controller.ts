@@ -7,7 +7,14 @@ import {
   immediate
 } from "robot3";
 import type { Machine } from "robot3";
-import { CESKM, Store, scalar, parse_cbpv, continuation, topk } from "precursor-ts";
+import {
+  CESKM,
+  Store,
+  scalar,
+  parse_cbpv,
+  continuation,
+  topk
+} from "precursor-ts";
 import type { State, Value } from "precursor-ts";
 import { signal, wire } from "torc";
 import type { Signal, Wire } from "torc";
