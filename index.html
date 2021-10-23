@@ -265,16 +265,13 @@ const samples = [
 "    (let age-times-7 (op:num->str (op:mul (op:str->num age) 7))",
 "    (op:concat \"Whoa! That is \"",
 "    (op:concat age-times-7 \" in dog years!\"))))))",
-"",
-"  (pair (λ (a b) (reset ((shift k k) a b))))",
 ")",
 "((? begin) (!",
 "  (let name ((? prompt) \"What is your name?\")",
 "  (let _ ((? writeln) (! ((? welcome) name)))",
 "  (let age ((? prompt) \"How old are you?\")",
 "  (let _ ((? writeln) (! ((? dog-years) age)))",
-"  (let p ((? pair) name (op:str->num age))",
-"  ((? finish) p))))))))",
+"  ((? finish) _)))))))",
 ")",
 ]
 ];
