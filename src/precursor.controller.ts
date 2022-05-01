@@ -16,8 +16,7 @@ import {
   topk
 } from "precursor-ts";
 import type { State, Value } from "precursor-ts";
-import { signal, wire } from "torc";
-import type { Signal, Wire } from "torc";
+import { Signal, Wire } from "torc";
 
 type Base = string | number | boolean | null | Signal<Value<Base>>;
 type VMState = IteratorResult<State<Base>, Value<Base>>;
@@ -57,7 +56,7 @@ class Memory extends Store<Base> {
 
 class PrecursorController extends CESKM<Base> {
   protected readonly actions: Action[keyof Action][] = [];
-  protected stdout: Wire<string> = wire();
+  protected stdout: Wire<string> = new Wire();
 
   constructor(cb?: (wires: IOWires) => void) {
     super();
@@ -170,7 +169,7 @@ class PrecursorController extends CESKM<Base> {
   protected op(op_sym: string, args: Value<Base>[]): Value<Base> {
     switch (op_sym) {
       case "op:readln": {
-        const input = signal<Value<Base>>(continuation(topk()));
+        const input = new Signal<Value<Base>>(continuation(topk()));
         this.actions.push({ input });
         return scalar(input);
       }
