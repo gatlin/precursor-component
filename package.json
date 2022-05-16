@@ -19,10 +19,10 @@
   },
   "dependencies": {
     "lit": "^2.0.0-rc.2",
-    "lit-robot-manager": "github:gatlin/manager#afbd8edad33d61b7c7dac9a0efe101689d35cfe9",
+    "lit-robot-manager": "github:gatlin/manager#25ac290",
     "precursor-ts": "github:gatlin/precursor-ts",
     "robot3": "^0.2.21",
-    "torc": "github:gatlin/torc#f0c45684b716d0b5a6676fbb507fa10697203fa3",
+    "torc": "github:gatlin/torc#e58b0e8",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
