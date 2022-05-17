@@ -1,6 +1,6 @@
 {
   "name": "precursor-component",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "embedded precursor vm in a webcomponent",
   "author": "gatlin@niltag.net",
   "license": "AGPL-3.0",
@@ -19,10 +19,10 @@
   },
   "dependencies": {
     "lit": "^2.0.0-rc.2",
-    "lit-robot-manager": "github:gatlin/manager#25ac290",
+    "lit-robot-manager": "github:gatlin/manager#53c2c2a",
     "precursor-ts": "github:gatlin/precursor-ts",
     "robot3": "^0.2.21",
-    "torc": "github:gatlin/torc#e58b0e8",
+    "torc": "github:gatlin/torc#6718186",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -38,7 +38,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-lit": "^1.5.1",
     "eslint-plugin-prettier": "^3.4.0",
-    "prettierx": "^0.19.0",
+    "prettierx": "^0.8.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.56.0",
     "rollup-plugin-summary": "^1.3.0",
