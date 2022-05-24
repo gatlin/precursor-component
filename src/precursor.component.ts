@@ -27,7 +27,7 @@ class PrecursorComponent extends LitElement {
     }).machine
   );
 
-  protected initFromSlotText() {
+  protected initFromSlotText(): null | undefined {
     const slot = this.renderRoot.querySelector("slot");
     if (null === slot) {
       return slot;

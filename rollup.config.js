@@ -1,21 +1,22 @@
-import summary from 'rollup-plugin-summary';
-import {terser} from 'rollup-plugin-terser';
-import resolve from '@rollup/plugin-node-resolve';
-import replace from '@rollup/plugin-replace';
+import summary from "rollup-plugin-summary";
+import {terser} from "rollup-plugin-terser";
+import resolve from "@rollup/plugin-node-resolve";
+import replace from "@rollup/plugin-replace";
+import * as console from "console";
 
 export default {
-  input: 'precursor.component.js',
+  input: "precursor.component.js",
   output: {
-    file: 'precursor.component.bundled.js',
-    format: 'esm',
+    file: "precursor.component.bundled.js",
+    format: "esm"
   },
   onwarn(warning) {
-    if (warning.code !== 'THIS_IS_UNDEFINED') {
+    if (warning.code !== "THIS_IS_UNDEFINED") {
       console.error(`(!) ${warning.message}`);
     }
   },
   plugins: [
-    replace({'Reflect.decorate': 'undefined'}),
+    replace({"Reflect.decorate": "undefined"}),
     resolve(),
     terser({
       ecma: 2017,
@@ -23,10 +24,10 @@ export default {
       warnings: true,
       mangle: {
         properties: {
-          regex: /^__/,
-        },
-      },
+          regex: /^__/
+        }
+      }
     }),
-    summary(),
-  ],
+    summary()
+  ]
 };
