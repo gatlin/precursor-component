@@ -18,8 +18,8 @@ class PrecursorComponent extends LitElement {
 
   private manager = new Manager<VMState>(
     this,
-    new PrecursorController((wires) => {
-      wires.stdout.subscribe({
+    new PrecursorController((io): void => {
+      io.stdout.subscribe({
         next: (message: string) => {
           this.stdoutLog.push(message);
         }

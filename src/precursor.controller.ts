@@ -20,7 +20,7 @@ import { Signal, Wire } from "torc";
 
 type Base = string | number | boolean | null | Signal<Value<Base>>;
 type VMState = IteratorResult<State<Base>, Value<Base>>;
-type Virtual<S = Record<string, unknown>, K = string> = Machine<S, VMState, K>;
+type VM<S = Record<string, unknown>, K = string> = Machine<S, VMState, K>;
 type Action = {
   readln: {
     input: Signal<Value<Base>>;
@@ -74,7 +74,7 @@ class PrecursorController extends CESKM<Base> {
     };
   }
 
-  public readonly machine: Virtual = createMachine(
+  public readonly machine: VM = createMachine(
     {
       INIT: state(
         transition(
@@ -125,13 +125,12 @@ class PrecursorController extends CESKM<Base> {
           "replyStdin",
           "STEP",
           reduce((vms: VMState, cmd: Cmd["stdin"]): VMState => {
-            const action: Record<string, unknown> | undefined =
+            const action: Action[keyof Action] | undefined =
               this.actions.shift();
             if ("undefined" === typeof action || !("input" in action)) {
               throw new Error("invalid continuation awaiting readln");
             }
-            const input: Signal<Value<Base>> = (action as Action["readln"])
-              .input;
+            const input: Signal<Value<Base>> = action.input; 
             input.next(scalar(cmd.data));
             return vms;
           })
@@ -141,12 +140,12 @@ class PrecursorController extends CESKM<Base> {
         immediate(
           "STEP",
           reduce((vms: VMState): VMState => {
-            const action: Record<string, unknown> | undefined =
+            const action: Action[keyof Action] | undefined =
               this.actions.shift();
             if ("undefined" === typeof action || !("message" in action)) {
               throw new Error("invalid continuation awaiting writeln");
             }
-            this.stdout.next((action as Action["writeln"]).message);
+            this.stdout.next(action.message);
             return vms;
           })
         )

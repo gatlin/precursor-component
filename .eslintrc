@@ -1,14 +1,13 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "prettierx"],
   "ignorePatterns": ["dist/**/*", "**/*.test.ts", "example.ts"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:lit/recommended",
-    "prettier"
+    "plugin:lit/recommended"
   ],
   "rules": {
     "quotes": ["error", "double"],
