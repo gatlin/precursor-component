@@ -79,14 +79,14 @@ class PrecursorController extends CESKM<Base> {
       INIT: state(
         transition(
           "run",
-          "STEP",
-          reduce((vms: VMState, cmd: Cmd["run"]): VMState => {
-            vms = this.step(this.inject(parse_cbpv(cmd.program)));
-            return vms;
-          })
+          "LOOP",
+          reduce(
+            (_vms: VMState, cmd: Cmd["run"]): VMState =>
+              this.step(this.inject(parse_cbpv(cmd.program)))
+          )
         )
       ),
-      STEP: state(
+      LOOP: state(
         immediate(
           "WAIT",
           guard((): boolean => this.actions.length > 0)
@@ -94,13 +94,10 @@ class PrecursorController extends CESKM<Base> {
         immediate(
           "HALT",
           guard((vms: VMState): boolean => vms.done ?? false),
-          reduce((vms: VMState): VMState => {
-            // cleanup
-            return vms;
-          })
+          reduce((vms: VMState): VMState => vms)
         ),
         immediate(
-          "STEP",
+          "LOOP",
           reduce((vms: VMState): VMState => this.step(vms.value as State<Base>))
         )
       ),
@@ -123,14 +120,14 @@ class PrecursorController extends CESKM<Base> {
       READLN: state(
         transition(
           "replyStdin",
-          "STEP",
+          "LOOP",
           reduce((vms: VMState, cmd: Cmd["stdin"]): VMState => {
             const action: Action[keyof Action] | undefined =
               this.actions.shift();
             if ("undefined" === typeof action || !("input" in action)) {
               throw new Error("invalid continuation awaiting readln");
             }
-            const input: Signal<Value<Base>> = action.input; 
+            const input: Signal<Value<Base>> = action.input;
             input.next(scalar(cmd.data));
             return vms;
           })
@@ -138,7 +135,7 @@ class PrecursorController extends CESKM<Base> {
       ),
       WRITELN: state(
         immediate(
-          "STEP",
+          "LOOP",
           reduce((vms: VMState): VMState => {
             const action: Action[keyof Action] | undefined =
               this.actions.shift();

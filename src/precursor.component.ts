@@ -3,7 +3,7 @@ import { customElement, state } from "lit/decorators.js";
 import { Manager } from "lit-robot-manager";
 import { PrecursorController } from "./precursor.controller.js";
 import type { VMState } from "./precursor.controller";
-import "./texteditor.component.js";
+import "text-editor-component";
 
 @customElement("precursor-component")
 class PrecursorComponent extends LitElement {
@@ -57,32 +57,34 @@ class PrecursorComponent extends LitElement {
           )}
           ${"HALT" === this.manager.current
             ? html`
-              <div class="output-block">
-                <pre><code>${JSON.stringify(
-                  this.manager.context.value,
-                  null,
-                  2
-                )}</code>
+                <div class="output-block">
+                  <pre><code>${JSON.stringify(
+                    this.manager.context.value,
+                    null,
+                    2
+                  )}</code>
               </pre>
-              </div>
-            `
+                </div>
+              `
             : null}
           ${"READLN" === this.manager.current
             ? html`
-              <span>
-                <label for="stdin-input">
-                  <input
-                    .value=${this.stdinBuffer}
-                    @change=${(e: Event): void => {
-                      this.stdinBuffer = (e.target as HTMLInputElement).value;
-                    }}
-                    type="text"
-                    id="stdin-input"
-                  />
-                  <button type="button" @click=${this.replyStdin}>reply</button>
-                </label>
-              </span>
-            `
+                <span>
+                  <label for="stdin-input">
+                    <input
+                      .value=${this.stdinBuffer}
+                      @change=${(e: Event): void => {
+                        this.stdinBuffer = (e.target as HTMLInputElement).value;
+                      }}
+                      type="text"
+                      id="stdin-input"
+                    />
+                    <button type="button" @click=${this.replyStdin}>
+                      reply
+                    </button>
+                  </label>
+                </span>
+              `
             : null}
         </div>
         <text-editor
@@ -98,17 +100,17 @@ class PrecursorComponent extends LitElement {
       <div id="controls">
         ${"INIT" === this.manager.current
           ? this.controlButton("Run", () =>
-            this.manager.next({
-              type: "run",
-              program: this.source
-            })
-          )
+              this.manager.next({
+                type: "run",
+                program: this.source
+              })
+            )
           : "HALT" === this.manager.current
-            ? this.controlButton("Reset", () => {
+          ? this.controlButton("Reset", () => {
               this.manager.next("reset");
               this.stdoutLog = [];
             })
-            : html`<button type="button" disabled=${true}>Running ...</button>`}
+          : html`<button type="button" disabled=${true}>Running ...</button>`}
       </div>
     `;
   }
@@ -156,18 +158,31 @@ class PrecursorComponent extends LitElement {
       display: inline-flex;
       flex-direction: column-reverse;
       flex: 9;
-      justify-content: center;
+      justify-content: space-between;
       gap: 1rem;
       margin: 0;
       padding: 1rem;
     }
 
+    #editor {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      margin: 0;
+      height: 100%;
+      color: #edf7f6;
+      background-color: #2f4f4f;
+      border-radius: 4px;
+      flex: 3;
+    }
+
     #output {
-      padding: 1rem;
       box-sizing: border-box;
       background-color: #11001c;
       color: #d4e4bc;
-      display: block;
+      display: inline-block;
       width: 100%;
       height: 100%;
       flex: 1;
@@ -175,6 +190,7 @@ class PrecursorComponent extends LitElement {
       border-radius: 4px;
       font-family: "Fira Code", "Fira Mono", monospace;
       font-weight: bold;
+      padding: 1rem;
     }
 
     div#controls {
