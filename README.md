@@ -20,8 +20,8 @@ for the language** which you may [visit][demosite] and play with!
 1. The examples demonstrate how features enjoyed in other programming languages
 can be written straightforwardly with Precursor's operators
 [(even though the grammar is small)][cbpvgrammar]:
-  - sample 1: a generator pattern á la JavaScript or Python is built from scratch;
-  - sample 2: non-linear control flow without loops or conditionals;
+  - sample 1: a haphazard overview of some basic language features;
+  - sample 2: a generator pattern á la JavaScript or Python is built from scratch;
   - sample 3: an [Actor][actormodel] is created that safely encapsulates state
     mutation;
   - sample 4: a list data type is defined and then a list of numbers is reduced
