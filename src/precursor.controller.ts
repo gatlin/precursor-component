@@ -59,7 +59,7 @@ class PrecursorController extends CESKM<Base> {
   protected stdout: Wire<string> = new Wire();
 
   constructor(cb?: (wires: IOWires) => void) {
-    super();
+    super(Memory);
     if (cb) {
       cb({
         stdout: this.stdout
@@ -157,10 +157,6 @@ class PrecursorController extends CESKM<Base> {
     },
     () => this.defaultVMState()
   );
-
-  protected empty_store() {
-    return new Memory();
-  }
 
   protected op(op_sym: string, args: Value<Base>[]): Value<Base> {
     switch (op_sym) {

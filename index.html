@@ -99,8 +99,8 @@ select {
           <select id="example-select" name="example-select">
             <option value="" selected>pick an example or write your own code
             HERE</option>
-            <option value="0">sample 1 - generators</option>
-            <option value="1">sample 2 - continuations</option>
+            <option value="0">sample 1 - basics</option>
+            <option value="1">sample 2 - generators</option>
             <option value="2">sample 3 - reducers &amp; closures</option>
             <option value="3">sample 4 - data structures</option>
             <option value="4">sample 5 - effect handlers!</option>
@@ -112,9 +112,38 @@ select {
     </main>
     <script type="text/javascript">
 const samples = [
+["; \"letrec\" = recursive let-binding, the way to define multiple",
+"; terms simultaneously.",
+"(letrec (",
+"",
+"  ; Defines unary function \"square\".",
+"  (square (\\ (n)",
+"    (let n (? n)    ; Always ensure a term is fully evaluated",
+"    (op:mul n n)))) ; before passing it to an op.",
+"    ; All \"primitive\" machine operations are prefixed with \"op:\".",
+"",
+"  ; Precursor can deal with JSON values: double-quoted strings,",
+"  ; arbitrary precision numbers, and booleans.",
+"  (format-message (\\ (num1 num2)",
+"    (let num1 (? num1)",
+"    (let num2 (? num2)",
+"    (op:concat \"The square of \"",
+"    (op:concat (op:num->str num1)",
+"    (op:concat \" is \"",
+"    (op:concat (op:num->str num2) \".\"))))))))",
+"",
+")",
+"",
+"; The second part of a letrec is a body expression which may",
+"; refer to the above definitions.",
+"; This is functionally our \"main\" routine.",
+"(let n 3",
+"(let n2 ((? square) n)",
+"(let msg ((? format-message) n n2)",
+"(op:writeln msg))))",
+")"],
 [
-  "(letrec ( ; recursively define (\"let\") ...",
-  "  ; \"shift\" captures a \"delimited continuation\" (see \"reset\")",
+  "(letrec (",
   "  (yield (\\ (value) (shift k",
   "    (! (\\ (p)",
   "      ((? p) value k))))))",
@@ -142,20 +171,6 @@ const samples = [
   "",
   "(let n3 ((? peek) gen)",
   "(op:add (op:add n1 n2) n3)))))))",
-  ")"
-],
-[
-  "(letrec (",
-  "  (thirteen (\\ ()",
-  "    (let twelve (reset",
-  "      (let three-then-six (shift times-2",
-  "        (let six (times-2 3)",
-  "        (times-2 six)))",
-  "      (op:mul 2 three-then-six)))",
-  "    (op:add twelve 1))))",
-  ")",
-  "(let n ((? thirteen))",
-  "(op:concat \"Result: \" (! (op:num->str n))))",
   ")"
 ],
 [
