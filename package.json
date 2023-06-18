@@ -20,7 +20,7 @@
   "dependencies": {
     "lit": "^2.0.0-rc.2",
     "lit-robot-manager": "github:gatlin/manager#c81349b00d882a847f79cc2a28e125edf0b8bbbf",
-    "precursor-ts": "github:gatlin/precursor-ts#e2563281b54ed5a2defb8e83c60459b129a2bfd4",
+    "precursor-ts": "github:gatlin/precursor-ts#4642cae225cb7cff642706ba17a1af6396651643",
     "robot3": "^0.2.21",
     "text-editor-component": "github:gatlin/text-editor-component#f64d606",
     "torc": "github:gatlin/torc#55e860f7d9dc90268e84ef27e5d62fcc08c9efbb",
