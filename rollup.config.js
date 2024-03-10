@@ -1,4 +1,4 @@
-import {terser} from "@rollup/plugin-terser";
+import terser from "@rollup/plugin-terser";
 import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
 import * as console from "console";
@@ -15,7 +15,7 @@ export default {
     }
   },
   plugins: [
-    replace({"Reflect.decorate": "undefined"}),
+    replace({ "Reflect.decorate": "undefined" }),
     resolve(),
     terser({
       ecma: 2017,
@@ -26,6 +26,6 @@ export default {
           regex: /^__/
         }
       }
-    }),
+    })
   ]
 };
