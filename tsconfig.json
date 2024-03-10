@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "target": "es2019",
     "module": "es2020",
     "lib": ["es2020","DOM","DOM.Iterable"],
@@ -31,5 +32,5 @@
   "include": [
     "src/**/*.ts"
   ],
-  "exclude": []
+  "exclude": ["./node_modules/**/*"]
 }

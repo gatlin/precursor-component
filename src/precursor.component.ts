@@ -106,11 +106,11 @@ class PrecursorComponent extends LitElement {
               })
             )
           : "HALT" === this.manager.current
-          ? this.controlButton("Reset", () => {
-              this.manager.next("reset");
-              this.stdoutLog = [];
-            })
-          : html`<button type="button" disabled=${true}>Running ...</button>`}
+            ? this.controlButton("Reset", () => {
+                this.manager.next("reset");
+                this.stdoutLog = [];
+              })
+            : html`<button type="button" disabled=${true}>Running ...</button>`}
       </div>
     `;
   }

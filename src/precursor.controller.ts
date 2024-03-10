@@ -16,14 +16,14 @@ import {
   topk
 } from "precursor-ts";
 import type { State, Value } from "precursor-ts";
-import { Signal, Wire } from "torc";
+import { Behavior, Wire } from "torc";
 
-type Base = string | number | boolean | null | Signal<Value<Base>>;
+type Base = string | number | boolean | null | Behavior<Value<Base>>;
 type VMState = IteratorResult<State<Base>, Value<Base>>;
 type VM<S = Record<string, unknown>, K = string> = Machine<S, VMState, K>;
 type Action = {
   readln: {
-    input: Signal<Value<Base>>;
+    input: Behavior<Value<Base>>;
   };
   writeln: {
     message: string;
@@ -127,7 +127,7 @@ class PrecursorController extends CESKM<Base> {
             if ("undefined" === typeof action || !("input" in action)) {
               throw new Error("invalid continuation awaiting readln");
             }
-            const input: Signal<Value<Base>> = action.input;
+            const input: Behavior<Value<Base>> = action.input;
             input.next(scalar(cmd.data));
             return vms;
           })
@@ -162,7 +162,7 @@ class PrecursorController extends CESKM<Base> {
     try {
       switch (op_sym) {
         case "op:readln": {
-          const input = new Signal<Value<Base>>(continuation(topk()));
+          const input = new Behavior<Value<Base>>(continuation(topk()));
           this.actions.push({ input });
           return scalar(input);
         }
