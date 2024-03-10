@@ -18,13 +18,12 @@ class PrecursorComponent extends LitElement {
 
   private manager = new Manager<VMState>(
     this,
-    new PrecursorController((io): void => {
-      io.stdout.subscribe({
-        next: (message: string) => {
-          this.stdoutLog.push(message);
-        }
-      });
-    }).machine
+    new PrecursorController(
+      (io) =>
+        void io.stdout.subscribe(
+          (message: string) => void this.stdoutLog.push(message)
+        )
+    ).machine
   );
 
   protected initFromSlotText(): null | undefined {

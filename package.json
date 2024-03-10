@@ -11,7 +11,7 @@
   "scripts": {
     "build": "tsc",
     "bundle": "tsc && rollup -c",
-    "clean": "rimraf \"{*.d.ts,*.map,*.js.map,*.component.js,*.controller.js,*.bundled.js}\"",
+    "clean": "rimraf precursor.component.* precursor.controller.*",
     "format": "prettier --config ./.prettierrc  --write src/**/*.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "prepublishOnly": "npm run build",
